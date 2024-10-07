@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Shopping Cart</h1>
+        <ul class="cart-list">
+            {% if cart %}
+                {% for item, description in cart.items() %}
+                    <li>{{ item }}: {{ description }}</li>
+                {% endfor %}
+            {% else %}
+                <li>Your cart is empty.</li>
+            {% endif %}
+        </ul>
+        <a href="{{ url_for('display_menu') }}" class="button">Back to Menu</a>
+    </div>
+</body>
+</html>

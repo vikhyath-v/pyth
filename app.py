@@ -1,43 +1,46 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
-# Configure database (replace with your desired database URI)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+cart = {}
+shirts = {
+    "1": "Levi Black T-Shirt",
+    "2": "H&M Nirvana Themed T-Shirt",
+    "3": "Deadpool and Wolverine "
+}
 
-db = SQLAlchemy(app)
+@app.route('/')
+def display_menu():
+    return render_template('menu.html', cart=cart, shirts=shirts)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+@app.route('/view_products')
+def view_products():
+    return render_template('view_products.html', shirts=shirts)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    item = request.form.get('item')
+    if item in shirts:
+        cart[item] = shirts[item]
+        flash(f"{shirts[item]} added to cart.", "success")
+    else:
+        flash("Invalid item number. Please try again.", "error")
+    return redirect(url_for('display_menu'))
 
-@app.route('/', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
+@app.route('/view_cart')
+def view_cart():
+    return render_template('view_cart.html', cart=cart)
 
-        # Add basic validation (optional)
-        # For example, check if username or email already exists
+@app.route('/popcart', methods=['POST'])
+def popcart():
+    item_to_remove = request.form.get('item')
+    if item_to_remove in cart:
+        removed_item = cart.pop(item_to_remove)
+        flash(f"{removed_item} removed from cart.", "success")
+    else:
+        flash("Invalid item number. Please try again.", "error")
+    return redirect(url_for('display_menu'))
 
-        user = User(username=username, email=email, password=password)
-        db.session.add(user)
-        db.session.commit()
-
-        # Display success message
-        signup_message = "Signup successful! You can now log in."
-        return render_template('signup.html', signup_message=signup_message)
-
-    return render_template('signup.html')
-
-if __name__ == '__main__':
-    # Create the database tables (uncomment if needed)
-    # db.create_all()
-    app.run(debug=True, port=5001)  # Use a non-conflicting port (e.g., 5001)
+if __name__ == "__main__":
+    app.run(debug=True, port=5002)

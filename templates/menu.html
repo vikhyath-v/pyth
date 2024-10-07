@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Shopping Cart Menu</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <div class="menu-options">
+         <center><a href="{{ url_for('view_products') }}" class="button">View Products</a></center>   
+            <form action="{{ url_for('add_to_cart') }}" method="POST">
+                <label for="item">Add Item to Cart:</label>
+                <input type="text" name="item" id="item">
+                <button type="submit" >Add</button>
+            </form>
+            <center><a href="{{ url_for('view_cart') }}" class="button">View Cart</a></center>
+            <form action="{{ url_for('popcart') }}" method="POST">
+                <label for="item">Delete from Cart:</label>
+                <input type="text" name="item" id="item">
+                <button type="submit">Remove</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
