@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='product_page.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Feathers</div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="product-details">
+            <h1 id="product-heading">{{ product.name }}</h1>
+            <img src="{{ url_for('static', filename='images/' + product.imgname) }}" alt="{{ product.name }}" class="product-images">
+            <p id="pprice">Price: ₹{{ product.price }}</p>
+
+            <form action="{{ url_for('buy_now', product_id=product_id) }}" method="POST">
+                <button class="cta-button1">Buy Now</button>
+            </form>
+            <form action="{{ url_for('add_to_cart', product_id=product_id) }}" method="POST">
+                <button class="cta-button2">Add to Cart</button>
+            </form>
+        </section>
+    </main>
+    <div class="toast" id="toast">{{ get_flashed_messages(with_categories=True) | join(' ') }}</div>
+    <footer>
+        <p>&copy; 2024 Feathers. All rights reserved.</p>
+    </footer>
+    <script>
+        // Show toast if message exists
+        document.addEventListener('DOMContentLoaded', function () {
+            var toast = document.getElementById('toast');
+            if (toast.innerText.trim() !== '') {
+                toast.style.display = 'block'; // Show the toast
+                setTimeout(function () {
+                    toast.style.display = 'none'; // Hide the toast after 3 seconds
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

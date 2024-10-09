@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask,session, render_template, request, redirect, url_for, flash
 import sqlite3
 import re
+import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -20,11 +21,13 @@ def init_db():
 
 init_db()
 
-cart = {}
-shirts = {
-    "1": "Levi Black T-Shirt",
-    "2": "H&M Nirvana Themed T-Shirt",
-    "3": "Deadpool and Wolverine"
+global lcart 
+lcart = []
+
+# Separate products dictionary with imgname
+products = {
+   "1": {"name": "Denim Jacket", "price": 999, "imgname": "denim jack.jpeg"},
+   "2": {"name": "Blue Oversize Tee", "price": 1299, "imgname" : "blue_ov.jpeg"}
 }
 
 def validate_signup(username, email, password):
@@ -59,23 +62,14 @@ def signup():
         errors = validate_signup(username, email, password)
         
         if not errors:
-            # Hash the password
-            
-            
-            user_data = {
-                'username': username,
-                'email': email,
-                'password': password
-            }
-            
             conn = sqlite3.connect('users.db')
             c = conn.cursor()
             try:
                 c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                          (user_data['username'], user_data['email'], user_data['password']))
+                          (username, email, password))
                 conn.commit()
                 flash("Signup successful!", "success")
-                return redirect(url_for('display_menu'))
+                return redirect(url_for('home'))
             except sqlite3.IntegrityError:
                 flash("Username or email already exists. Please try again.", "error")
             finally:
@@ -86,37 +80,81 @@ def signup():
     
     return render_template('signup.html')
 
-@app.route('/menu')
-def display_menu():
-    return render_template('menu.html', cart=cart, shirts=shirts)
+@app.route('/home')
+def home():
+    return render_template('home.html', products=products)
 
 @app.route('/view_products')
 def view_products():
-    return render_template('view_products.html', shirts=shirts)
+    return render_template('view_products.html', products=products)
 
-@app.route('/add_to_cart', methods=['POST'])
-def add_to_cart():
-    item = request.form.get('item')
-    if item in shirts:
-        cart[item] = shirts[item]
-        flash(f"{shirts[item]} added to cart.", "success")
+@app.route('/product_page/<product_id>')
+def product_page(product_id):
+    product = products.get(product_id)
+    if product:
+        return render_template('product_page.html', product=product, product_id=product_id)
     else:
-        flash("Invalid item number. Please try again.", "error")
-    return redirect(url_for('display_menu'))
+        flash("Product not found.", "error")
+        return redirect(url_for('home'))
+
+@app.route('/buy_now/<product_id>', methods=['POST'])
+def buy_now(product_id):
+    product = products.get(product_id)
+    if product:
+        message = f"You have purchased {product['name']} for ₹{product['price']}."
+        flash(message)  # This sets the flash message
+        return redirect(url_for('product_page', product_id=product_id, success=message))  # Redirect to the product page
+    else:
+        flash("Product not found.", "error")
+        return redirect(url_for('product_page'))  # Or redirect to a valid route
+
+@app.route('/add_to_cart/<product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    product = products.get(product_id)
+    if product:
+        # Generate a new unique ID for each added product
+        unique_cart_item_id = str(uuid.uuid4())
+        
+        # Add the product to the cart with a new unique ID
+        lcart.append({
+            'cart_item_id': unique_cart_item_id,  # Unique ID for this cart item
+            'id': product_id,  # Product ID remains the same for the product itself
+            'name': product['name'],
+            'price': product['price'],
+            'imgname': product['imgname'],
+            'quantity': 1  # Each new addition starts with a quantity of 1
+        })
+        
+        flash(f"You have added {product['name']} to your cart.", "success")
+        return redirect(url_for('product_page', product_id=product_id))
+    else:
+        flash("Product not found.", "error")
+        return redirect(url_for('view_products'))
 
 @app.route('/view_cart')
-def view_cart():
-    return render_template('view_cart.html', cart=cart)
+def view_cart():  
+    global cart
+    if lcart:  # Check if lcart (global cart list) has any items
+        cart = lcart
+        total_amount = sum(item['price'] * item['quantity'] for item in cart)
+        return render_template('view_cart.html', cart=cart, total_amount=total_amount)
+    else:
+        flash("Your cart is empty.", "info")
+        return redirect(url_for('view_products'))
+
+
+
+
 
 @app.route('/popcart', methods=['POST'])
 def popcart():
     item_to_remove = request.form.get('item')
     if item_to_remove in cart:
         removed_item = cart.pop(item_to_remove)
-        flash(f"{removed_item} removed from cart.", "success")
+        flash(f"{removed_item['name']} removed from cart.", "success")
     else:
         flash("Invalid item number. Please try again.", "error")
-    return redirect(url_for('display_menu'))
+    return redirect(url_for('view_cart'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
