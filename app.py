@@ -112,10 +112,16 @@ def buy_now(product_id):
 def add_to_cart(product_id):
     product = products.get(product_id)
     if product:
-        # Generate a new unique ID for each added product
-        unique_cart_item_id = str(uuid.uuid4())
+        # Check if the product is already in the cart
+        for cart_item in lcart:
+            if cart_item['id'] == product_id:
+                # If the product is already in the cart, increment its quantity
+                cart_item['quantity'] += 1
+                flash(f"Updated {product['name']} quantity in your cart.", "success")
+                return redirect(url_for('product_page', product_id=product_id))
         
-        # Add the product to the cart with a new unique ID
+        # If the product is not in the cart, add it with a new unique ID
+        unique_cart_item_id = str(uuid.uuid4())
         lcart.append({
             'cart_item_id': unique_cart_item_id,  # Unique ID for this cart item
             'id': product_id,  # Product ID remains the same for the product itself
@@ -140,7 +146,7 @@ def view_cart():
         return render_template('view_cart.html', cart=cart, total_amount=total_amount)
     else:
         flash("Your cart is empty.", "info")
-        return redirect(url_for('view_products'))
+        return render_template('view_cart.html')
 
 
 
@@ -155,6 +161,33 @@ def popcart():
     else:
         flash("Invalid item number. Please try again.", "error")
     return redirect(url_for('view_cart'))
+
+
+@app.route('/reduce_quantity/<product_id>', methods=['POST'])
+def reduce_quantity(product_id):
+    # Find the product in the cart
+    for item in lcart:
+        if item['id'] == product_id:
+            if item['quantity'] > 1:
+                item['quantity'] -= 1
+                flash(f"Reduced {item['name']} quantity.", "success")
+            else:
+                # Optionally, remove the item if the quantity reaches 1
+                lcart.remove(item)
+                flash(f"Removed {item['name']} from the cart.", "info")
+            break
+    return redirect(url_for('view_cart'))
+
+@app.route('/remove_from_cart/<product_id>', methods=['POST'])
+def remove_from_cart(product_id):
+    # Find the product in the cart and remove it
+    for item in lcart:
+        if item['id'] == product_id:
+            lcart.remove(item)
+            flash(f"Removed {item['name']} from your cart.", "info")
+            break
+    return redirect(url_for('view_cart'))
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
