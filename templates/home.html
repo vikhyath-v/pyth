@@ -12,10 +12,10 @@
             <div class="logo">Feathers</div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="#">New Arrivals</a></li>
-                <li><a href="#">Collections</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
             </ul>
         </nav>
     </header>
@@ -44,7 +44,7 @@
                 <div class="product-card">
                     <img src="/static/images/blue_ov.jpeg" alt="Blue Oversized Tee" class="product-image">
                     <h3>Blue Oversized Tee</h3>
-                    <p>₹999</p>
+                    <p>{{products.price}}</p>
                     <a href="{{ url_for('product_page', product_id=2) }}" class="cta-button">View Product</a>
                 </div>
                 <div class="product-card">

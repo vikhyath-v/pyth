@@ -4,34 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='view_cart.css') }}">
 </head>
 <body>
+    <header>
+        <nav>
+            <div class="logo">Feathers</div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <h1>Your Shopping Cart</h1>
 
     <div class="cart-items">
         {% if cart %}
             <ul>
                 {% for item in cart %}
-                <li>
-                    <h2>{{ item['name'] }}</h2>
+                <li class="cart-item">
                     <img src="{{ url_for('static', filename=item['imgname']) }}" alt="{{ item['name'] }}">
-                    <p>Price: ₹{{ item['price'] }}</p>
-                    <p>Quantity: {{ item['quantity'] }}</p>
+                    <div class="item-details">
+                        <h2>{{ item['name'] }}</h2>
+                        <p class="price">Rs. {{ item['price'] }}</p>
+                        <div class="additional-info">
+                            <p>Art.no: {{ item['id'] }}</p>
+                            <p>Colour: {{ item['color'] }}</p>
+                            <p>Size: {{ item['size'] }}</p>
+                            <p>Total: Rs. {{ item['price'] }}</p>
+                        </div>
+                    </div>
 
-                    <!-- Form to reduce quantity -->
-                    <form action="{{ url_for('reduce_quantity', product_id=item['id']) }}" method="POST">
-                        <button type="submit">Reduce Quantity</button>
-                    </form>
-
-                    <!-- Form to remove the product -->
-                    <form action="{{ url_for('remove_from_cart', product_id=item['id']) }}" method="POST">
-                        <button type="submit">Remove Product</button>
-                    </form>
+                    <div class="cart-controls">
+                    
+                        <select class="quantity-input" name="quantity">
+                            <option value="1" {% if item['quantity'] == 1 %}selected{% endif %}>1</option>
+                            <option value="2" {% if item['quantity'] == 2 %}selected{% endif %}>2</option>
+                            <!-- Add more options if needed -->
+                        </select>
+                        <form action="{{ url_for('remove_from_cart', product_id=item['id']) }}" method="POST">
+                            <button class="delete-btn" type="submit">🗑️</button>
+                        </form>
+                    </div>
                 </li>
                 <hr>
                 {% endfor %}
             </ul>
-            <h3>Total Amount: ₹{{ total_amount }}</h3>
+            <h3>Total Amount: Rs. {{ total_amount }}</h3>
         {% else %}
             <p>Your cart is empty.</p>
         {% endif %}
