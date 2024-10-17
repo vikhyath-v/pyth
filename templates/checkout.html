@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}">
+    <script href="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><img id="limg"src="/static/logo.png"></div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="checkout-section">
+            <h1>Checkout for {{ product.name }}</h1>
+            <p>Price: ₹{{ product.price }}</p>
+            <form action="{{ url_for('order_confirmation', product_id=product_id) }}" method="POST">
+                <h3>Select Payment Method:</h3>
+                <label>
+                    <input type="radio" name="payment_method" value="cash" required> Cash
+                </label>
+                <label>
+                    <input type="radio" name="payment_method" value="card" required> Card
+                </label>
+                <label>
+                    <input type="radio" name="payment_method" value="upi" required> UPI
+                </label>
+
+                <!-- Card Payment Form -->
+                <div id="card-info" style="display:none;">
+                    <h4>Enter Card Details:</h4>
+                    <label>Card Number: <input type="text" name="card_number" placeholder="Card Number" required></label>
+                    <label>Expiry Date: <input type="text" name="expiry_date" placeholder="MM/YY" required></label>
+                </div>
+
+                <!-- UPI Payment Form -->
+                <div id="upi-info" style="display:none;">
+                    <h4>Enter UPI ID:</h4>
+                    <label>UPI ID: <input type="text" name="upi_id" placeholder="your@upi" required></label>
+                </div>
+               
+                    <button type="submit" class="submit-button"><a href="{{ url_for('order_confirmation', product_id=product_id) }}" >Order</a></button>
+               
+               
+            </form>
+        </section>
+    </main>
+    <script>
+        // Toggle payment forms based on selected method
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('card-info').style.display = this.value === 'card' ? 'block' : 'none';
+                document.getElementById('upi-info').style.display = this.value === 'upi' ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

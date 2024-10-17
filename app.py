@@ -3,6 +3,8 @@ import sqlite3
 import re
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -26,8 +28,32 @@ lcart = []
 
 # Separate products dictionary with imgname
 products = {
-   "1": {"name": "Denim Jacket", "price": 999, "imgname": "denim jack.jpeg"},
-   "2": {"name": "Blue Oversize Tee", "price": 1299, "imgname" : "blue_ov.jpeg"}
+ "1": {"name": "Osaka Sweatshirt", "price": 1999,"imgname": "biegesweat.jpg","category":"sweatshirt","gender":"male"},
+  "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"}
+}
+
+view_product ={
+    "1": {"name": "Osaka Sweatshirt", "price": 1999,"imgname": "biegesweat.jpg","category":"sweatshirt","gender":"male"},
+    "2": {"name": "white Sweatshirt", "price": 999,"imgname": "whitesweat.jpg","category":"sweatshirt","gender":"male"},
+    "3": {"name": "Grey Sweatshirt", "price": 999,"imgname": "greysweatwom.jpg","category":"sweatshirt","gender":"female"},
+    "4": {"name": "White Sweatshirt", "price": 999,"imgname": "whitesweatwom.jpg","category":"sweatshirt","gender":"female"},
+    "5": {"name": "Maroon printed tee", "price": 999,"imgname": "maroontee.jpg","category":"tee","gender":"male"},
+    "6": {"name": "Blue printed tee", "price": 999,"imgname": "blue_ov.jpg","category":"sweatshirt","gender":"male"},
+    "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"},
+    "8":{"name": "Floral top", "price": 999,"imgname": "floraltop.jpg","category":"top","gender":"female"},
+    "9":{"name": "Yellow top", "price": 999,"imgname": "yellowtop.jpg","category":"top","gender":"female"},
+    "10":{"name": "Pink POLO tee", "price": 999,"imgname": "pinkpolo.jpg","category":"tee","gender":"male"},
+    "11":{"name": "Green POLO tee", "price": 999,"imgname": "greenpolo.jpg","category":"tee","gender":"male"},
+    "12":{"name": "Grey POLO tee", "price": 999,"imgname": "greypolo.jpg","category":"tee","gender":"male"},
+    "13":{"name": "Black Jeans", "price": 999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
+    "14":{"name": "BLue Jeans", "price": 999,"imgname": "bluejean.jpg","category":"jeans","gender":"male"},
+    "15":{"name": "Brownish Jeans", "price": 999,"imgname": "brownjean.jpg","category":"jeans","gender":"male"},
+    "16":{"name": "Low jeans ", "price": 999,"imgname": "lowjeanwom.jpg","category":"jeans","gender":"male"},
+    "17":{"name": "Denim Jacket", "price": 999,"imgname": "denimjack.jpg","category":"jacket","gender":"female"},
+    
+    
+    
+    
 }
 
 def validate_signup(username, email, password):
@@ -83,34 +109,35 @@ def signup():
 @app.route('/home')
 def home():
     return render_template('home.html', products=products)
-
 @app.route('/view_products')
 def view_products():
-    return render_template('view_products.html', products=products)
+    category = request.args.get('category', '')
+    sort_by = request.args.get('sort', 'default')
+
+    # Initialize products with view_product
+    products = view_product
+
+    # Filter products by category if specified
+    if category:
+        products = {k: v for k, v in products.items() if v['category'] == category}
+
+    return render_template('view_products.html', view_product=products)
+
 
 @app.route('/product_page/<product_id>')
 def product_page(product_id):
-    product = products.get(product_id)
+    product = products.get(product_id) or view_product.get(product_id)
     if product:
         return render_template('product_page.html', product=product, product_id=product_id)
     else:
         flash("Product not found.", "error")
         return redirect(url_for('home'))
 
-@app.route('/buy_now/<product_id>', methods=['POST'])
-def buy_now(product_id):
-    product = products.get(product_id)
-    if product:
-        message = f"You have purchased {product['name']} for ₹{product['price']}."
-        flash(message)  # This sets the flash message
-        return redirect(url_for('product_page', product_id=product_id, success=message))  # Redirect to the product page
-    else:
-        flash("Product not found.", "error")
-        return redirect(url_for('product_page'))  # Or redirect to a valid route
+
 
 @app.route('/add_to_cart/<product_id>', methods=['POST'])
 def add_to_cart(product_id):
-    product = products.get(product_id)
+    product = products.get(product_id) or view_product.get(product_id)
     if product:
         # Check if the product is already in the cart
         for cart_item in lcart:
@@ -163,6 +190,21 @@ def popcart():
     return redirect(url_for('view_cart'))
 
 
+@app.route('/increase_quantity/<product_id>', methods=['POST'])
+def increase_quantity(product_id):
+    # Find the product in the cart
+    for item in lcart:
+        if item['id'] == product_id:
+            if item['quantity'] >= 1:
+                item['quantity'] += 1
+                flash(f"Added {item['name']} quantity.", "success")
+            else:
+                # Optionally, remove the item if the quantity reaches 1
+                lcart.remove(item)
+                flash(f"Added {item['name']} from the cart.", "info")
+            break
+    return redirect(url_for('view_cart'))
+
 @app.route('/reduce_quantity/<product_id>', methods=['POST'])
 def reduce_quantity(product_id):
     # Find the product in the cart
@@ -187,6 +229,29 @@ def remove_from_cart(product_id):
             flash(f"Removed {item['name']} from your cart.", "info")
             break
     return redirect(url_for('view_cart'))
+
+@app.route('/checkout/<product_id>', methods=['GET', 'POST'])
+def checkout(product_id):
+    product = products.get(product_id) or view_product.get(product_id)
+    if request.method == 'POST':
+        payment_method = request.form.get('payment_method')
+        if payment_method == 'card':
+            card_number = request.form.get('card_number')
+            expiry_date = request.form.get('expiry_date')
+            # Process card payment
+        elif payment_method == 'upi':
+            upi_id = request.form.get('upi_id')
+            # Process UPI payment
+        # Redirect to order confirmation after processing
+    return render_template('checkout.html', product=product,product_id=product_id)
+   
+
+
+@app.route('/order_confirmation/<product_id>')
+def order_confirmation(product_id):
+    product = products.get(product_id) or view_product.get(product_id)
+    delivery_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
+    return render_template('order_confirmation.html', product=product, delivery_date=delivery_date)
 
 
 if __name__ == "__main__":

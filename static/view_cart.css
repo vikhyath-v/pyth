@@ -1,51 +1,121 @@
-/* Basic reset */
-* {
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f8f8;
-    padding: 20px;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    background-color: #f4f4f4;
+    color: #333;
 }
 
 header {
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 10px 20px;
-}
-
-.logo {
-    font-size: 28px;
-    font-weight: bold;
+    background-color: transparent; /* Semi-transparent background */
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
 }
 
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #eae2d8;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#limg {
+    height: 10vh;
+    margin-top:0px;
+    transition: transform 0.3s ease;
 }
 
 .nav-links {
-    list-style-type: none;
-}
-
-.nav-links li {
-    display: inline-block;
-    margin-left: 20px;
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    padding: 0;
 }
 
 .nav-links li a {
-    color: #333;
     text-decoration: none;
+    color: #eae2d8;
     font-size: 18px;
-    transition: color 0.3s;
+    transition: color 0.3s ease;
 }
 
 .nav-links li a:hover {
-    color: #ff6347;
+    color: #ffd700;
+}body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: transparent; /* Semi-transparent background */
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #eae2d8;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#limg {
+    height: 10vh;
+    margin-top:0px;
+    transition: transform 0.3s ease;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #955200;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: #eae2d8;
 }
 
 h1 {
@@ -53,11 +123,12 @@ h1 {
     margin-bottom: 20px;
     color: #333;
     text-align: center;
+    margin-top: 15vh;
 }
 
 .cart-items {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 5vh auto 0;
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -69,6 +140,11 @@ h1 {
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
 }
 
 .cart-item img {
@@ -109,25 +185,37 @@ h1 {
     align-items: center;
 }
 
-.wishlist-btn {
-    background-color: #fff;
-    border: 1px solid #333;
-    padding: 5px 10px;
-    font-size: 24px;
+.add-btn, .reduce-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    margin-right: 10px;
-    border-radius: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
 }
 
-.wishlist-btn:hover {
-    background-color: #f5f5f5;
+.add-btn:hover, .reduce-btn:hover {
+    background-color: #45a049;
 }
 
-.quantity-input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    margin-right: 10px;
+.reduce-btn {
+    background-color: #f44336;
+}
+
+.reduce-btn:hover {
+    background-color: #d32f2f;
+}
+
+.cart-controls form {
+    margin: 0 2px;
 }
 
 .delete-btn {
@@ -152,4 +240,18 @@ h3 {
     text-align: right;
     font-size: 22px;
     color: #333;
+}
+
+/* Toast notification styles */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none; /* Hidden by default */
+    z-index: 1000;
 }

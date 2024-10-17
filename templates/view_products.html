@@ -4,17 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Products</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='view_products.css') }}">
+    <script href="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Our Products</h1>
-        <ul class="product-list">
-            {% for item, description in shirts.items() %}
-                <li>{{ item }}: {{ description }}</li>
+    <header>
+        <nav>
+            <div class="logo"><img id="limg"src="/static/logo.png"></div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+<hr>
+    <section class="filter-sort">
+        <div class="filter">
+            <label for="category">Filter by Category:</label>
+            <select id="category" name="category" onchange="filterAndSort()">
+                <option value="">All</option>
+                {% for category in view_product.values()|map(attribute='category')|unique %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+            
+        </div>
+        
+        <div class="sort">
+            <label for="sort">Sort by:</label>
+            <select id="sort" name="sort" onchange="filterAndSort()">
+                <option value="default">Default</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="products">
+        <h2>YOUR FASHION </h2>
+        <div class="product-grid">
+            {% for product_id, product in view_product.items() %}
+            <div class="product-card">
+                <img src="/static/images/{{ product['imgname'] }}" alt="{{ product['name'] }}" class="product-image">
+                <h3 class="productname">{{ product['name'] }}</h3>
+                <p class="productprice">₹ {{ product['price'] }}</p>
+                <a href="{{ url_for('product_page', product_id=product_id) }}" class="view_product">View Product</a>
+            </div>
             {% endfor %}
-        </ul>
-        <a href="{{ url_for('display_menu') }}" class="button">Back to Menu</a>
-    </div>
+         
+        </div>
+    </section>
+    <script>
+    const header = document.querySelector('header');
+        function filterAndSort() {
+    const category = document.getElementById('category').value;
+    const sort = document.getElementById('sort').value;
+    const url = new URL(window.location.href);
+    
+    url.searchParams.set('category', category);
+    url.searchParams.set('sort', sort);
+
+    window.location.href = url.toString();
+}
+
+const navLinks = document.querySelectorAll('.nav-links li a');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        navLinks.forEach(link => {
+            link.style.color = '#eae2d8';
+        });
+    } else {
+        header.style.backgroundColor = 'transparent';
+        navLinks.forEach(link => {
+            link.style.color = '#955200';
+        });
+    }
+});
+
+
+
+    </script>
 </body>
 </html>

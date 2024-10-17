@@ -9,12 +9,11 @@
 <body>
     <header>
         <nav>
-            <div class="logo">Feathers</div>
+            <div class="logo"><img id="limg"src="/static/logo.png"></div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
                 <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
             </ul>
         </nav>
@@ -41,29 +40,15 @@
         <section class="featured-products">
             <h2>Featured Products</h2>
             <div class="product-grid">
+                {% for product_id, product in products.items() %}
                 <div class="product-card">
-                    <img src="/static/images/blue_ov.jpeg" alt="Blue Oversized Tee" class="product-image">
-                    <h3>Blue Oversized Tee</h3>
-                    <p>{{products.price}}</p>
-                    <a href="{{ url_for('product_page', product_id=2) }}" class="cta-button">View Product</a>
+                    <img src="/static/images/{{ product['imgname'] }}" alt="{{ product['name'] }}" class="product-image">
+                    <h3>{{ product['name'] }}</h3>
+                    <p>₹ {{ product['price'] }}</p>
+                    <a href="{{ url_for('product_page', product_id=product_id) }}" class="cta-button">View Product</a>
                 </div>
-                <div class="product-card">
-                    <img src="/static/images/denim jack.jpeg" alt="Denim Jacket" class="product-image">
-                    <h3>Denim Jacket</h3>
-                    <p>₹1499</p>
-                    <a href="{{ url_for('product_page', product_id=1) }}" class="cta-button">View Product</a>
-                </div>
-                
-                <div class="product-card">
-                    <img src="/api/placeholder/250/200" alt="Product 3" class="product-image">
-                    <h3>Denim Jeans</h3>
-                    <p>₹2499</p>
-                </div>
-                <div class="product-card">
-                    <img src="/api/placeholder/250/200" alt="Product 4" class="product-image">
-                    <h3>Formal Blazer</h3>
-                    <p>₹3999</p>
-                </div>
+                {% endfor %}
+             
             </div>
         </section>
     </main>
@@ -77,6 +62,7 @@
         const navItems = document.querySelectorAll('.carousel-nav-item');
         const prevButton = document.querySelector('.prev');
         const nextButton = document.querySelector('.next');
+        const header = document.querySelector('header');
         let currentIndex = 0;
 
         function showSlide(index) {
@@ -107,6 +93,31 @@
         prevButton.addEventListener('click', prevSlide);
 
         setInterval(nextSlide, 5000); // Change slide every 5 seconds
+
+        const navLinks = document.querySelectorAll('.nav-links li a');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        navLinks.forEach(link => {
+            link.style.color = '#eae2d8';
+        });
+    } else {
+        header.style.backgroundColor = 'transparent';
+        navLinks.forEach(link => {
+            link.style.color = '#955200';
+        });
+    }
+});
+
+    // Logo hover effect
+    const logo = document.querySelector('#limg');
+    logo.addEventListener('mouseover', () => {
+        logo.style.transform = 'scale(1.1)';
+    });
+    logo.addEventListener('mouseout', () => {
+        logo.style.transform = 'scale(1)';
+    });
     </script>
 </body>
 </html>

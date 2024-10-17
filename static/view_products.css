@@ -1,0 +1,155 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    background-color: #eae2d8;;
+    color: #333;
+}
+
+header {
+    background-color: trans;
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #eae2d8;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#limg {
+    height: 10vh;
+    margin-top:0px;
+    transition: transform 0.3s ease;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    padding: 0;
+}
+
+
+
+.nav-links li a {
+    text-decoration: none;
+    color: #955200;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: #746553;
+}
+hr {
+    border: 0;
+    border-top: 1px solid #603b00;
+    margin: 100px 0;
+}
+
+.filter-sort {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 10px auto 30px;
+    padding: 0 20px;
+}
+
+.filter, .sort {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+select:hover {
+    border-color: #aaa;
+}
+
+.products {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding-bottom: 20px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.productname {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0px 10px;
+}
+
+.productprice {
+    font-size: 16px;
+    color: #ff1900;
+    font-weight: bold;
+    padding: 10px 10px;
+}
+
+.view_product{
+    background-color: #ffc3c3;
+    text-decoration: none;
+    width: 100%;
+    padding: 10px 80px;
+    margin-left:10px;
+    margin-bottom:10px;
+    border-radius: 5px;
+}
