@@ -4,15 +4,26 @@ import re
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
+from PIL import Image
+from io import BytesIO
+import os
+
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+
+
 # Database setup
 def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
+    
+    # Drop the existing table if it exists (This will delete all current data)
+
+    
+    # Create a new table with the profile_image column
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   username TEXT NOT NULL UNIQUE,
@@ -21,6 +32,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Call this function to recreate the table
 init_db()
 
 global lcart 
@@ -29,7 +41,9 @@ lcart = []
 # Separate products dictionary with imgname
 products = {
  "1": {"name": "Osaka Sweatshirt", "price": 1999,"imgname": "biegesweat.jpg","category":"sweatshirt","gender":"male"},
-  "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"}
+  "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"},
+      "13":{"name": "Black Jeans", "price": 999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
+        "11":{"name": "Green POLO tee", "price": 999,"imgname": "greenpolo.jpg","category":"tee","gender":"male"}
 }
 
 view_product ={
@@ -56,6 +70,7 @@ view_product ={
     
 }
 
+
 def validate_signup(username, email, password):
     errors = []
     
@@ -77,38 +92,122 @@ def validate_signup(username, email, password):
     
     return errors
 
+# Signup route
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-        
+       
         # Validate input
         errors = validate_signup(username, email, password)
         
         if not errors:
             conn = sqlite3.connect('users.db')
             c = conn.cursor()
+            # Check if the username or email already exists
+            existing_user = c.execute('SELECT * FROM users WHERE username = ? OR email = ?', (username, email)).fetchone()
+            
+            if existing_user:
+                flash("Username or email already exists. Please login instead.", "error")
+                return redirect(url_for('login'))  # Redirect to login page if user exists
+            
             try:
+                # Insert new user into the database
                 c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                           (username, email, password))
                 conn.commit()
-                flash("Signup successful!", "success")
-                return redirect(url_for('home'))
-            except sqlite3.IntegrityError:
-                flash("Username or email already exists. Please try again.", "error")
+                flash("Signup successful! Please login.", "success")
+                return redirect(url_for('login'))  # Redirect to login page after signup
+            except Exception as e:
+                flash("Error saving user: {}".format(e), "error")
+                conn.rollback()  # Rollback if there's an error
             finally:
                 conn.close()
         else:
             for error in errors:
                 flash(error, "error")
-    
+
     return render_template('signup.html')
+
+# Profile route to display user information
+@app.route('/profile')
+def profile():
+    # Retrieve the username from session
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    user_data = c.execute('SELECT username, email, profile_image FROM users WHERE username = ?', (username,)).fetchone()
+    conn.close()
+
+    if user_data:
+        profile_image = None
+        if user_data[2]:
+            profile_image = base64.b64encode(user_data[2]).decode('utf-8')  # Convert image to base64
+
+        return render_template('profile.html', 
+                               username=user_data[0], 
+                               email=user_data[1], 
+                               profile_image=profile_image)
+    else:
+        flash("User not found", "error")
+        return redirect(url_for('login'))
+
+
+# Logout route
+@app.route('/logout')
+def logout():
+    session.pop('username', None)  # Remove the username from session
+    flash("Logged out successfully.", "success")
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        print(f"Attempting to log in with username: {username} and password: {password}")  # Debugging output
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+
+        # Fetch user data based on the provided username
+        user = c.execute('SELECT username, password FROM users WHERE username = ?', (username,)).fetchone()
+        conn.close()
+
+        # Debugging output for user retrieval
+        print(f"Fetched user: {user}")  # Should show either a tuple (username, hashed_password) or None
+
+        # Validate user credentials
+        if user and user[1] == password:  # Compare password with user[1]
+            # Store username in the session
+            session['username'] = user[0]
+            flash("Login successful!", "success")
+            
+            # Redirect to home page after successful login
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid username or password")
+        
+    return render_template('login.html')
+
+
+
 
 @app.route('/home')
 def home():
-    return render_template('home.html', products=products)
+    if 'username' in session:
+        return render_template('home.html',products=products)
+    else:
+        return redirect(url_for('login'))
+ 
+    
 @app.route('/view_products')
 def view_products():
     category = request.args.get('category', '')
@@ -247,11 +346,11 @@ def checkout(product_id):
    
 
 
-@app.route('/order_confirmation/<product_id>')
-def order_confirmation(product_id):
-    product = products.get(product_id) or view_product.get(product_id)
+@app.route('/order_confirmation')
+def order_confirmation():
+  
     delivery_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
-    return render_template('order_confirmation.html', product=product, delivery_date=delivery_date)
+    return render_template('order_confirmation.html', delivery_date=delivery_date)
 
 
 if __name__ == "__main__":

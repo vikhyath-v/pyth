@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}">
     <script href="{{ url_for('static', filename='script.js') }}"></script>
 </head>
-<body>
+<body  style="background-color: #eae2d8;" >
     <header>
         <nav>
             <div class="logo"><img id="limg"src="/static/logo.png"></div>
@@ -16,9 +16,11 @@
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
             </ul>
         </nav>
     </header>
+    <hr id="navii">
     <main>
         <section class="checkout-section">
             <h1>Checkout for {{ product.name }}</h1>
@@ -48,7 +50,7 @@
                     <label>UPI ID: <input type="text" name="upi_id" placeholder="your@upi" required></label>
                 </div>
                
-                    <button type="submit" class="submit-button"><a href="{{ url_for('order_confirmation', product_id=product_id) }}" >Order</a></button>
+                    <button type="submit" class="submit-button"><a href="{{ url_for('order_confirmation') }}" >Order</a></button>
                
                
             </form>
@@ -62,6 +64,25 @@
                 document.getElementById('upi-info').style.display = this.value === 'upi' ? 'block' : 'none';
             });
         });
+    
+
+const header = document.querySelector('header');
+const navLinks = document.querySelectorAll('.nav-links li a');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        navLinks.forEach(link => {
+            link.style.color = '#eae2d8';
+        });
+    } else {
+        header.style.backgroundColor = 'transparent';
+        navLinks.forEach(link => {
+            link.style.color = '#955200';
+        });
+    }
+});
+
     </script>
 </body>
 </html>

@@ -11,11 +11,12 @@
     <header>
         <nav>
             <div class="logo"><img id="limg"src="/static/logo.png"></div>
-            <ul class="nav-links" id="nav-links">
+            <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
             </ul>
         </nav>
     </header>
@@ -50,7 +51,7 @@
                 <img src="/static/images/{{ product['imgname'] }}" alt="{{ product['name'] }}" class="product-image">
                 <h3 class="productname">{{ product['name'] }}</h3>
                 <p class="productprice">₹ {{ product['price'] }}</p>
-                <a href="{{ url_for('product_page', product_id=product_id) }}" class="view_product">View Product</a>
+                <a href="{{ url_for('product_page', product_id=product_id) }}" class="cta-button">View Product</a>
             </div>
             {% endfor %}
          

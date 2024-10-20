@@ -1,59 +1,121 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Your Cart</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='view_cart.css') }}">
-        <script href="{{ url_for('static', filename='home.css') }}"></script>
-    </head>
-    <body>
-        <header>
-            <nav>
-                <div class="logo"><img id="limg"src="/static/logo.png"></div>
-                <ul class="nav-links">
-                    <li><a href="{{ url_for('home') }}">Home</a></li>
-                    <li><a href="{{ url_for('view_products') }}">Products</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
-                </ul>
-            </nav>
-        </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='view_cart.css') }}">
+    
+    <script href="{{ url_for('static', filename='home.css') }}"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><img id="limg"src="/static/logo.png"></div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr id="navii">
 
-        <h1>Your Shopping Cart</h1>
+    <h1>Your Shopping Cart</h1>
 
-        <div class="cart-items">
-            {% if cart %}
-                <ul>
-                    {% for item in cart %}
-                    <li class="cart-item">
-                        <img src="{{ url_for('static', filename='images/' + item['imgname']) }}" alt="{{ item['name'] }}">
-                        <div class="item-details">
-                            <h2>{{ item['name'] }}</h2>
-                            <p class="price">Rs. {{ item['price'] }}</p>
-                            <div class="additional-info">
-                            <p>Quantity:{{item['quantity']}}</p>
-                            </div>
+    <div class="cart-items">
+        {% if cart %}
+            <ul>
+                {% for item in cart %}
+                <li class="cart-item">
+                    <img src="{{ url_for('static', filename='images/' + item['imgname']) }}" alt="{{ item['name'] }}">
+                    <div class="item-details">
+                        <h2>{{ item['name'] }}</h2>
+                        <p class="price">Rs. {{ item['price'] }}</p>
+                        <div class="additional-info">
+                        <p>Quantity:{{item['quantity']}}</p>
                         </div>
+                    </div>
 
-                        <div class="cart-controls">
-                            <form action="{{ url_for('increase_quantity', product_id=item['id']) }}" method="POST">
-                                <button class="add-btn" type="submit">+</button>
-                            </form>
-                            <form action="{{ url_for('reduce_quantity', product_id=item['id']) }}" method="POST">
-                                <button class="reduce-btn" type="submit">-</button>
-                            </form>
-                        
-                           
-                        </div>
-                    </li>
-                    <hr>
-                    {% endfor %}
-                </ul>
-                <h3>Total Amount: Rs. {{ total_amount }}</h3>
-            {% else %}
-                <p>Your cart is empty.</p>
-            {% endif %}
+                    <div class="cart-controls">
+                        <form action="{{ url_for('increase_quantity', product_id=item['id']) }}" method="POST">
+                            <button class="add-btn" type="submit">+</button>
+                        </form>
+                        <form action="{{ url_for('reduce_quantity', product_id=item['id']) }}" method="POST">
+                            <button class="reduce-btn" type="submit">-</button>
+                        </form>
+                    
+                       
+                    </div>
+                </li>
+                <hr>
+                {% endfor %}
+            </ul>
+            <h3>Total Amount: Rs. {{ total_amount }}</h3>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    <div class="main">
+        <section class="checkout-section">
+
+    <form action="{{ url_for('order_confirmation', product_id=product_id) }}" method="POST">
+        <h4>Select Payment Method:</h4>
+        <label>
+            <input type="radio" name="payment_method" value="cash" required> Cash
+        </label>
+        <label>
+            <input type="radio" name="payment_method" value="card" required> Card
+        </label>
+        <label>
+            <input type="radio" name="payment_method" value="upi" required> UPI
+        </label>
+
+        <!-- Card Payment Form -->
+        <div id="card-info" style="display:none;">
+            <h4>Enter Card Details:</h4>
+            <label>Card Number: <input type="text" name="card_number" placeholder="Card Number" required></label>
+            <label>Expiry Date: <input type="text" name="expiry_date" placeholder="MM/YY" required></label>
         </div>
-    </body>
-    </html>
+
+        <!-- UPI Payment Form -->
+        <div id="upi-info" style="display:none;">
+            <h4>Enter UPI ID:</h4>
+            <label>UPI ID: <input type="text" name="upi_id" placeholder="your@upi" required></label>
+        </div>
+       
+            <button type="submit" class="submit-button"><a href="{{ url_for('order_confirmation', product_id=product_id) }}" >Order</a></button>
+       
+       
+    </form>
+</section>
+</div>
+    <script>
+        // Toggle payment forms based on selected method
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('card-info').style.display = this.value === 'card' ? 'block' : 'none';
+                document.getElementById('upi-info').style.display = this.value === 'upi' ? 'block' : 'none';
+            });
+        });
+        const header = document.querySelector('header');
+const navLinks = document.querySelectorAll('.nav-links li a');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        navLinks.forEach(link => {
+            link.style.color = '#eae2d8';
+        });
+    } else {
+        header.style.backgroundColor = 'transparent';
+        navLinks.forEach(link => {
+            link.style.color = '#955200';
+        });
+    }
+});
+    </script>
+</body>
+</html>

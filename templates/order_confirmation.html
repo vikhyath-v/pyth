@@ -16,14 +16,14 @@
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
             </ul>
         </nav>
     </header>
     <main>
         <section class="confirmation-section">
             <h1>Order Confirmed!</h1>
-            <img src="{{ url_for('static', filename='images/' + product.imgname) }}" class="ph">
-            <p>Thank you for purchasing {{ product.name }}.</p>
+            <p>Thank you for shopping with us!</p>
             <p>Delivery Date: {{ delivery_date }}</p>
         </section>
     </main>

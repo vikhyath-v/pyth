@@ -10,11 +10,12 @@
     <header>
         <nav>
             <div class="logo"><img id="limg"src="/static/logo.png"></div>
-            <ul class="nav-links" id="nav-links">
+            <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="{{ url_for('view_cart') }}">View Cart</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
             </ul>
         </nav>
     </header>
@@ -60,22 +61,6 @@
             }, 2000);
         });
     });
-    const header = document.querySelector('header');
-const navLinks = document.querySelectorAll('.nav-links li a');
-
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-        header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-        navLinks.forEach(link => {
-            link.style.color = '#eae2d8';
-        });
-    } else {
-        header.style.backgroundColor = 'transparent';
-        navLinks.forEach(link => {
-            link.style.color = '#955200';
-        });
-    }
-});
     </script>
 </body>
 </html>

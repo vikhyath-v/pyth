@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    <style>
+       
+    </style>
+</head>
+<body>
+
+    <h1>Feathers</h1>
+
+    <div id="toast" class="toast"></div>
+
+    <img src="/static/kkk.png" id="logo">
+
+    <div id="form">
+        <h2>Login</h2>
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" >
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+    </div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 2000); // Show for 3 seconds
+        }
+
+        // Example of how to trigger the toast message from Flask
+        window.onload = function() {
+    const flashMessage = '{{ get_flashed_messages(with_categories=true)}}';
+    if (flashMessage && flashMessage.trim() !== '[]') {
+        showToast(flashMessage);
+    }
+}
+
+    </script>
+
+</body>
+</html>

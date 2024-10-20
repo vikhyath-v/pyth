@@ -5,7 +5,7 @@ body {
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    background-color: #f4f4f4;
+    background-color: #eae2d8;
     color: #333;
 }
 
@@ -58,6 +58,12 @@ nav {
 
 .nav-links li a:hover {
     color: #ffd700;
+}
+
+#navii{
+    border: 0;
+    border-top: 1px solid #603b00;
+    margin: 100px 0;
 }
 /* Main content styles */
 body {
