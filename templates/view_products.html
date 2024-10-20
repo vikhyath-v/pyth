@@ -21,30 +21,31 @@
         </nav>
     </header>
 <hr>
-    <section class="filter-sort">
-        <div class="filter">
-            <label for="category">Filter by Category:</label>
-            <select id="category" name="category" onchange="filterAndSort()">
-                <option value="">All</option>
-                {% for category in view_product.values()|map(attribute='category')|unique %}
-                    <option value="{{ category }}">{{ category }}</option>
-                {% endfor %}
-            </select>
-            
-        </div>
-        
-        <div class="sort">
-            <label for="sort">Sort by:</label>
-            <select id="sort" name="sort" onchange="filterAndSort()">
-                <option value="default">Default</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-            </select>
-        </div>
-    </section>
+<section class="filter-sort">
+    <div class="filter">
+        <label for="category">Filter by Category:</label>
+        <select id="category" name="category" onchange="filterAndSort()">
+            <option value="">All</option> <!-- Default option to show all items -->
+            {% for category in view_product.values()|map(attribute='category')|unique %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="sort">
+        <label for="sort">Sort by:</label>
+        <select id="sort" name="sort" onchange="filterAndSort()">
+            <option value="default">Default</option> <!-- No sorting option -->
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+        </select>
+    </div>
+</section>
+
 
     <section class="products">
         <h2>YOUR FASHION </h2>
+        <h2>{{category}} </h2>
         <div class="product-grid">
             {% for product_id, product in view_product.items() %}
             <div class="product-card">
@@ -59,14 +60,16 @@
     </section>
     <script>
     const header = document.querySelector('header');
-        function filterAndSort() {
-    const category = document.getElementById('category').value;
-    const sort = document.getElementById('sort').value;
+    function filterAndSort() {
+    const category = document.getElementById('category').value; // Get the selected category
+    const sort = document.getElementById('sort').value;         // Get the selected sort option
     const url = new URL(window.location.href);
     
-    url.searchParams.set('category', category);
+    // Set or reset the category and sort query parameters
+    url.searchParams.set('category', category); 
     url.searchParams.set('sort', sort);
 
+    // Update the page URL to apply the filter and sort
     window.location.href = url.toString();
 }
 

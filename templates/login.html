@@ -13,7 +13,7 @@
 
     <h1>Feathers</h1>
 
-    <div id="toast" class="toast"></div>
+    <div class="toast" id="toast"></div>
 
     <img src="/static/kkk.png" id="logo">
 
@@ -21,7 +21,7 @@
         <h2>Login</h2>
         <form method="POST" action="{{ url_for('login') }}">
             <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" >
+            <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
         <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
@@ -39,11 +39,14 @@
 
         // Example of how to trigger the toast message from Flask
         window.onload = function() {
-    const flashMessage = '{{ get_flashed_messages(with_categories=true)}}';
-    if (flashMessage && flashMessage.trim() !== '[]') {
-        showToast(flashMessage);
+    const flashMessage = "{{ get_flashed_messages() | join(' ') }}";
+    if (flashMessage && flashMessage.length > 0) {
+        showToast(flashMessage);  // Display the first message if available
     }
 }
+
+
+
 
     </script>
 

@@ -40,28 +40,28 @@ lcart = []
 products = {
  "1": {"name": "Osaka Sweatshirt", "price": 1999,"imgname": "biegesweat.jpg","category":"sweatshirt","gender":"male"},
   "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"},
-      "13":{"name": "Black Jeans", "price": 999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
-        "11":{"name": "Green POLO tee", "price": 999,"imgname": "greenpolo.jpg","category":"tee","gender":"male"}
+      "13":{"name": "Black Jeans", "price": 3999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
+        "11":{"name": "Green POLO tee", "price": 2599,"imgname": "greenpolo.jpg","category":"tee","gender":"male"}
 }
 
 view_product ={
     "1": {"name": "Osaka Sweatshirt", "price": 1999,"imgname": "biegesweat.jpg","category":"sweatshirt","gender":"male"},
-    "2": {"name": "white Sweatshirt", "price": 999,"imgname": "whitesweat.jpg","category":"sweatshirt","gender":"male"},
+    "2": {"name": "white Sweatshirt", "price": 2549,"imgname": "whitesweat.jpg","category":"sweatshirt","gender":"male"},
     "3": {"name": "Grey Sweatshirt", "price": 999,"imgname": "greysweatwom.jpg","category":"sweatshirt","gender":"female"},
-    "4": {"name": "White Sweatshirt", "price": 999,"imgname": "whitesweatwom.jpg","category":"sweatshirt","gender":"female"},
+    "4": {"name": "White Sweatshirt", "price": 2549,"imgname": "whitesweatwom.jpg","category":"sweatshirt","gender":"female"},
     "5": {"name": "Maroon printed tee", "price": 999,"imgname": "maroontee.jpg","category":"tee","gender":"male"},
     "6": {"name": "Blue printed tee", "price": 999,"imgname": "blue_ov.jpg","category":"sweatshirt","gender":"male"},
     "7": {"name": "Pink top", "price": 999,"imgname": "pinktop.jpg","category":"top","gender":"female"},
-    "8":{"name": "Floral top", "price": 999,"imgname": "floraltop.jpg","category":"top","gender":"female"},
-    "9":{"name": "Yellow top", "price": 999,"imgname": "yellowtop.jpg","category":"top","gender":"female"},
+    "8":{"name": "Floral top", "price": 1999,"imgname": "floraltop.jpg","category":"top","gender":"female"},
+    "9":{"name": "Yellow top", "price": 1599,"imgname": "yellowtop.jpg","category":"top","gender":"female"},
     "10":{"name": "Pink POLO tee", "price": 999,"imgname": "pinkpolo.jpg","category":"tee","gender":"male"},
-    "11":{"name": "Green POLO tee", "price": 999,"imgname": "greenpolo.jpg","category":"tee","gender":"male"},
+    "11":{"name": "Green POLO tee", "price": 2599,"imgname": "greenpolo.jpg","category":"tee","gender":"male"},
     "12":{"name": "Grey POLO tee", "price": 999,"imgname": "greypolo.jpg","category":"tee","gender":"male"},
-    "13":{"name": "Black Jeans", "price": 999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
-    "14":{"name": "BLue Jeans", "price": 999,"imgname": "bluejean.jpg","category":"jeans","gender":"male"},
-    "15":{"name": "Brownish Jeans", "price": 999,"imgname": "brownjean.jpg","category":"jeans","gender":"male"},
-    "16":{"name": "Low jeans ", "price": 999,"imgname": "lowjeanwom.jpg","category":"jeans","gender":"male"},
-    "17":{"name": "Denim Jacket", "price": 999,"imgname": "denimjack.jpg","category":"jacket","gender":"female"},
+    "13":{"name": "Black Jeans", "price": 3999,"imgname": "blackjean.jpg","category":"jeans","gender":"male"},
+    "14":{"name": "BLue Jeans", "price": 1999,"imgname": "bluejean.jpg","category":"jeans","gender":"male"},
+    "15":{"name": "Brownish Jeans", "price": 998,"imgname": "brownjean.jpg","category":"jeans","gender":"male"},
+    "16":{"name": "Low jeans ", "price": 1999,"imgname": "lowjeanwom.jpg","category":"jeans","gender":"male"},
+    "17":{"name": "Denim Jacket", "price": 5999,"imgname": "denimjack.jpg","category":"jacket","gender":"female"},
     
     
     
@@ -217,8 +217,14 @@ def view_products():
     # Filter products by category if specified
     if category:
         products = {k: v for k, v in products.items() if v['category'] == category}
+   
+    
+    if sort_by == 'price-asc':
+        products = dict(sorted(products.items(), key=lambda item: item[1]['price']))
+    elif sort_by == 'price-desc':
+        products = dict(sorted(products.items(), key=lambda item: item[1]['price'], reverse=True))
 
-    return render_template('view_products.html', view_product=products)
+    return render_template('view_products.html', view_product=products, category=category,sort_by=sort_by)
 
 
 @app.route('/product_page/<product_id>')
