@@ -186,7 +186,7 @@ def login():
         if user and user[1] == password:  # Compare password with user[1]
             # Store username in the session
             session['username'] = user[0]
-            flash("Login successful!", "success")
+            
             
             # Redirect to home page after successful login
             return redirect(url_for('home'))
@@ -353,7 +353,7 @@ def checkout(product_id):
 @app.route('/order_confirmation')
 def order_confirmation():
   
-    delivery_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
+    delivery_date = (datetime.now() + timedelta(days=3)).strftime('%d-%m-%Y')
     return render_template('order_confirmation.html', delivery_date=delivery_date)
 
 
