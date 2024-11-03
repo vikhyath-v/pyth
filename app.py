@@ -26,7 +26,8 @@ def init_db():
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   username TEXT NOT NULL UNIQUE,
                   email TEXT NOT NULL UNIQUE,
-                  password TEXT NOT NULL)''')
+                  password TEXT NOT NULL,
+                  profile_pic TEXT                      )''')
     conn.commit()
     conn.close()
 
@@ -98,7 +99,7 @@ def signup():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-       
+        profile_pic = f"https://avatar.iran.liara.run/username?username={username}"
         # Validate input
         errors = validate_signup(username, email, password)
         
@@ -114,8 +115,8 @@ def signup():
             
             try:
                 # Insert new user into the database
-                c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                          (username, email, password))
+                c.execute("INSERT INTO users (username, email, password,profile_pic) VALUES (?, ?, ?, ?)",
+                          (username, email, password,profile_pic))
                 conn.commit()
                 flash("Signup successful! Please login.", "success")
                 return redirect(url_for('login'))  # Redirect to login page after signup
@@ -140,18 +141,15 @@ def profile():
 
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
-    user_data = c.execute('SELECT username, email, profile_image FROM users WHERE username = ?', (username,)).fetchone()
+    user_data = c.execute('SELECT username,profile_pic FROM users WHERE username = ?', (username,)).fetchone()
     conn.close()
 
     if user_data:
-        profile_image = None
-        if user_data[2]:
-            profile_image = base64.b64encode(user_data[2]).decode('utf-8')  # Convert image to base64
+        
 
         return render_template('profile.html', 
-                               username=user_data[0], 
-                               email=user_data[1], 
-                               profile_image=profile_image)
+                               username=user_data[0],
+                               profilepic=user_data[1])
     else:
         flash("User not found", "error")
         return redirect(url_for('login'))

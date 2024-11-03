@@ -39,9 +39,9 @@
 
         // Example of how to trigger the toast message from Flask
         window.onload = function() {
-    const flashMessage = '{{ get_flashed_messages()|tojson|safe }}';
-    if (flashMessage && flashMessage.trim() !== '[]') {
-        showToast(flashMessage[0]);
+    const flashMessage = "{{ get_flashed_messages() | join(' ') }}";
+    if (flashMessage && flashMessage.length > 0) {
+        showToast(flashMessage);  // Display the first message if available
     }
 }
 
