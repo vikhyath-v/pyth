@@ -9,5 +9,5 @@ Feathers is a Python-based web application designed for an online clothing store
 <li>Profile Page: User profile with editable information (username as ID for database lookup).</li>
 <li>Minimalistic Design: Clean and user-friendly interface.</li>
 <ol>
-
+<hr>
 You can access the site here:https://vikhyath.pythonanywhere.com/signup
